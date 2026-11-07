@@ -1,0 +1,6 @@
+{
+  "name": "RutaDirecta - Sistema de Reserva de Pasajes",
+  "description": "Sistema de reserva de pasajes para servicios de transporte con conductor y ruta fija, mapa de asientos interactivo y panel para el conductor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

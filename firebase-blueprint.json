@@ -1,0 +1,114 @@
+{
+  "entities": {
+    "Usuario": {
+      "title": "Usuario",
+      "description": "Usuario de la plataforma Chiva (pasajero o chófer)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "user": { "type": "string" },
+        "nombre": { "type": "string" },
+        "rol": { "type": "string", "enum": ["pasajero", "chofer"] },
+        "telefono": { "type": "string" },
+        "avatar": { "type": "string" }
+      },
+      "required": ["id", "user", "nombre", "rol"]
+    },
+    "Salida": {
+      "title": "Salida",
+      "description": "Salida programada de transporte Ibarra a Quito",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "origen": { "type": "string" },
+        "origenDetalle": { "type": "string" },
+        "destino": { "type": "string" },
+        "destinoDetalle": { "type": "string" },
+        "fecha": { "type": "string" },
+        "horaSalida": { "type": "string" },
+        "horaLlegadaEstimada": { "type": "string" },
+        "duracion": { "type": "string" },
+        "precio": { "type": "number" },
+        "totalAsientos": { "type": "number" }
+      },
+      "required": ["id", "origen", "destino", "fecha", "horaSalida", "precio", "totalAsientos"]
+    },
+    "Reserva": {
+      "title": "Reserva",
+      "description": "Boleto y reserva de pasaje",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "salidaId": { "type": "string" },
+        "pasajeroNombre": { "type": "string" },
+        "pasajeroTelefono": { "type": "string" },
+        "puntoPartidaPersonalizado": { "type": "string" },
+        "puntoLlegadaPersonalizado": { "type": "string" },
+        "asientos": { "type": "array" },
+        "metodoPago": { "type": "string" },
+        "estadoPago": { "type": "string", "enum": ["pendiente", "pagado"] },
+        "estadoAbordaje": { "type": "string", "enum": ["no_abordado", "abordado", "completado"] },
+        "total": { "type": "number" },
+        "fechaCreacion": { "type": "string" }
+      },
+      "required": ["id", "salidaId", "pasajeroNombre", "pasajeroTelefono", "puntoPartidaPersonalizado", "puntoLlegadaPersonalizado", "asientos", "metodoPago", "estadoPago", "total"]
+    },
+    "SeguimientoViaje": {
+      "title": "SeguimientoViaje",
+      "description": "Seguimiento en tiempo real para la sección ¿Cómo estás mi guambra?",
+      "type": "object",
+      "properties": {
+        "codigoReserva": { "type": "string" },
+        "estadoGuambra": { "type": "string", "enum": ["viajando_bien", "ya_llego_bien", "emergencia"] },
+        "latitud": { "type": "number" },
+        "longitud": { "type": "number" },
+        "ubicacionActual": { "type": "string" },
+        "velocidadKmH": { "type": "number" },
+        "tiempoRestante": { "type": "string" },
+        "novedad": { "type": "string" },
+        "tipoEmergencia": { "type": "string", "enum": ["ninguna", "se_danio", "seguridad", "accidente", "bloqueo_via"] },
+        "ultimaActualizacion": { "type": "string" }
+      },
+      "required": ["codigoReserva", "estadoGuambra", "latitud", "longitud", "ubicacionActual"]
+    },
+    "Valoracion": {
+      "title": "Valoracion",
+      "description": "Calificación y comentario de un viaje para el conductor guardado en Firestore",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reservaId": { "type": "string" },
+        "conductorNombre": { "type": "string" },
+        "pasajeroNombre": { "type": "string" },
+        "pasajeroId": { "type": "string" },
+        "estrellas": { "type": "number" },
+        "comentario": { "type": "string" },
+        "etiquetas": { "type": "array" },
+        "fecha": { "type": "string" }
+      },
+      "required": ["id", "reservaId", "conductorNombre", "pasajeroNombre", "estrellas"]
+    }
+  },
+  "firestore": {
+    "/usuarios/{usuarioId}": {
+      "schema": { "$ref": "#/entities/Usuario" },
+      "description": "Usuarios y choferes de la aplicación Chiva"
+    },
+    "/salidas/{salidaId}": {
+      "schema": { "$ref": "#/entities/Salida" },
+      "description": "Turnos y salidas programadas de Ibarra a Quito"
+    },
+    "/reservas/{reservaId}": {
+      "schema": { "$ref": "#/entities/Reserva" },
+      "description": "Reservas de pasajes y boletos digitales con QR"
+    },
+    "/seguimientos/{seguimientoId}": {
+      "schema": { "$ref": "#/entities/SeguimientoViaje" },
+      "description": "Seguimiento en vivo para ¿Cómo estás mi guambra? y novedades de emergencia"
+    },
+    "/valoraciones/{valoracionId}": {
+      "schema": { "$ref": "#/entities/Valoracion" },
+      "description": "Calificaciones de viajes y conductores guardadas en Firestore"
+    }
+  }
+}

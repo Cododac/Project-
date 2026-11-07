@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Red de seguridad global
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 2. Reglas para Colección Salidas (Lectura pública para ver horarios disponibles, escritura protegida)
+    match /salidas/{salidaId} {
+      allow read: if isValidId(salidaId);
+      allow create, update: if isValidId(salidaId) && incoming().precio is number && incoming().precio >= 0;
+      allow delete: if isValidId(salidaId);
+    }
+
+    // 3. Reglas para Colección Reservas (Boleto y QR)
+    match /reservas/{reservaId} {
+      allow read: if isValidId(reservaId);
+      allow create: if isValidId(reservaId) && incoming().pasajeroNombre is string && incoming().pasajeroNombre.size() > 0;
+      allow update: if isValidId(reservaId);
+      allow delete: if isValidId(reservaId);
+    }
+
+    // 4. Reglas para Colección Usuarios
+    match /usuarios/{usuarioId} {
+      allow read: if isValidId(usuarioId);
+      allow create, update: if isValidId(usuarioId);
+      allow delete: if isValidId(usuarioId);
+    }
+
+    // 5. Reglas para Colección Seguimientos ("¿Cómo estás mi guambra?")
+    match /seguimientos/{seguimientoId} {
+      allow read: if isValidId(seguimientoId);
+      allow create, update: if isValidId(seguimientoId) && incoming().codigoReserva is string;
+      allow delete: if isValidId(seguimientoId);
+    }
+
+    // 6. Reglas para Colección Valoraciones (Calificaciones del viaje y chofer)
+    match /valoraciones/{valoracionId} {
+      allow read: if isValidId(valoracionId);
+      allow create, update: if isValidId(valoracionId) && incoming().estrellas is number && incoming().estrellas >= 1 && incoming().estrellas <= 5;
+      allow delete: if isValidId(valoracionId);
+    }
+  }
+}
